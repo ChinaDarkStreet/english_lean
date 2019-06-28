@@ -1,0 +1,23 @@
+CREATE TABLE `stardict` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `word` varchar(64) NOT NULL COMMENT '单词',
+  `sw` varchar(64) NOT NULL COMMENT '去掉空格等的单词',
+  `phonetic` varchar(64) DEFAULT NULL COMMENT '音标，以英语英标为主',
+  `definition` text COMMENT '单词释义（英文），每行一个释义',
+  `translation` text COMMENT '单词释义（中文），每行一个释义',
+  `pos` varchar(16) DEFAULT NULL COMMENT '词语位置，用 "/" 分割不同位置',
+  `collins` smallint(6) DEFAULT '0' COMMENT '柯林斯星级',
+  `oxford` smallint(6) DEFAULT '0' COMMENT '是否是牛津三千核心词汇',
+  `tag` varchar(64) DEFAULT NULL COMMENT '字符串标签：zk/中考，gk/高考，cet4/四级 等等标签，空格分割',
+  `bnc` int(11) DEFAULT NULL COMMENT '英国国家语料库词频顺序',
+  `frq` int(11) DEFAULT NULL COMMENT '当代语料库词频顺序',
+  `exchange` text COMMENT '时态复数等变换，使用 "/" 分割不同项目，见后面表格',
+  `detail` text COMMENT 'json 扩展信息，字典形式保存例句（待添加）',
+  `audio` text COMMENT '读音音频 url （待添加）',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `word` (`word`),
+  KEY `sw` (`sw`,`word`),
+  KEY `collins` (`collins`),
+  KEY `oxford` (`oxford`),
+  KEY `tag` (`tag`)
+) ENGINE=MyISAM AUTO_INCREMENT=770835 DEFAULT CHARSET=utf8;

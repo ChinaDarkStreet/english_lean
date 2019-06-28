@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+    <html>
+    <head>
+        <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+        <title>ECDICT</title>
+        
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">
+        
+        <style>
+.task-list-item { list-style-type: none; } .task-list-item-checkbox { margin-left: -20px; vertical-align: middle; }
+</style>
+        <style>
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', 'Ubuntu', 'Droid Sans', sans-serif;
+                font-size: 14px;
+                line-height: 1.6;
+            }
+        </style>
+        
+        
+    </head>
+    <body>
+        <h1 id="ECDICT">ECDICT</h1>
+<p>Free English to Chinese Dictionary Database.</p>
+<h2 id="%E7%AE%80%E4%BB%8B">简介</h2>
+<p>这是一份英文-&gt;中文字典的双解词典数据库，根据各类考试大纲和语料库词频收录数十万条各类单词的英文和中文释义，并按照各类考试大纲和词频进行标注。</p>
+<p>最初开发看书软件时需要给软件添加一个内嵌字典，在网上找到了一份别人提供的 EDictAZ.txt 的文本文件，里面有差不多两万英文单词的释义，于是开始用这个文件来提供字典查询，用着用着不够用了，又找到一份四六级到 GRE 包含释义的词汇表，但是缺少音标，于是写了个爬虫从各种资料里面把音标给爬下来，外加自己补充了一些组成了一份三万基本词汇的数据库。</p>
+<p>其后数年根据各种资料和网友贡献词库增长到 10 万左右，又找到 Linux 下面的 cdict-1.0-1.rpm 这个开源字典数据（mdict 的主词库也是根据 cdict 转换得到），并按照英国国家语料库的前 16 万单词进行校对，补全很多语料库里词频较高但是却没有收录的词条。</p>
+<h2 id="%E5%8D%95%E8%AF%8D%E6%A0%87%E6%B3%A8">单词标注</h2>
+<p>给数据库中每个单词标注：是否是各类考试大纲词汇？以及他们在 BNC 和其他语料库里的词频顺序。BNC 词频统计的是最近几百年的历史各类英文资料，而当代语料库只统计了最近 20 年的，为什么两者都要提供呢？</p>
+<p>很简单，quay（码头）这个词在当代语料库里拍两万以外，你可能觉得是个没必要掌握的生僻词，而 BNC 里面却排在第 8906 名，基本算是一个高频词，为啥呢？可以想象过去航海还是一个重要的交通工具，所以以往的各类文字资料对这个词提的比较多，你要看懂 19 世纪即以前的各类名著，你会发现 BNC 的词频很管用。</p>
+<p>而你要阅读各类现代杂志，当代语料库的作用就体现出来了，比如 Taliban（塔利班），在 BNC 词频里基本就没收录（没进前 20 万词汇），而在当代语料库里，它已经冒到 6089 号了，高频中的高频。</p>
+<p>BNC 较为全面和传统，针对性学习能帮助你阅读各类国外帝王将相的文学名著，当代语料库较为现代和实时，以和科技紧密相关。所以两者搭配，干活不累。</p>
+<p>经过标注后，你查任何一个单词，都会告诉你这个词汇是不是四六级词汇？雅思词汇？柯林斯星级是多少？是否是牛津 3000 核心词汇？传统词频和现代词频各是多少？这样单词的重要程度你就能了解个大概了。</p>
+<p>其次是标注动词的各个时态，每个动词有现在分词，过去式，过去分词，第三人称现在时等四种时态，用 NodeBox 和 WordNet 工具包可以方便的查询每个动词的变化形式，如此你查单词时能够给你显示出来各种变体，同时将这些变体作为新的生词再次加入到字典中，大部分字典都没法查询动词的各种时态，ECDICT 可以让你方便的查询一万多个动词（几乎所有动词）的所有派生词。</p>
+<h2 id="%E6%95%B0%E6%8D%AE%E6%A0%BC%E5%BC%8F">数据格式</h2>
+<p>采用 CSV 文件存储所有词条数据，用 UTF-8 进行编码，用 Excel 的话，别直接打开，否则编码是错的。在 Excel 里选择数据，来自文本，然后设定逗号分割，UTF-8 编码即可。</p>
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>解释</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>word</td>
+<td>单词名称</td>
+</tr>
+<tr>
+<td>phonetic</td>
+<td>音标，以英语英标为主</td>
+</tr>
+<tr>
+<td>definition</td>
+<td>单词释义（英文），每行一个释义</td>
+</tr>
+<tr>
+<td>translation</td>
+<td>单词释义（中文），每行一个释义</td>
+</tr>
+<tr>
+<td>pos</td>
+<td>词语位置，用 &quot;/&quot; 分割不同位置</td>
+</tr>
+<tr>
+<td>collins</td>
+<td>柯林斯星级</td>
+</tr>
+<tr>
+<td>oxford</td>
+<td>是否是牛津三千核心词汇</td>
+</tr>
+<tr>
+<td>tag</td>
+<td>字符串标签：zk/中考，gk/高考，cet4/四级 等等标签，空格分割</td>
+</tr>
+<tr>
+<td>bnc</td>
+<td>英国国家语料库词频顺序</td>
+</tr>
+<tr>
+<td>frq</td>
+<td>当代语料库词频顺序</td>
+</tr>
+<tr>
+<td>exchange</td>
+<td>时态复数等变换，使用 &quot;/&quot; 分割不同项目，见后面表格</td>
+</tr>
+<tr>
+<td>detail</td>
+<td>json 扩展信息，字典形式保存例句（待添加）</td>
+</tr>
+<tr>
+<td>audio</td>
+<td>读音音频 url （待添加）</td>
+</tr>
+</tbody>
+</table>
+<p>提供一段 Python 程序来读取这些数据，可以用它转换到 SQLite 和 MySQL 的数据库里，方便你用更高级的方法筛选查询。词条数据大小写不敏感，不论从查询还是排序，还是编程接口。</p>
+<h2 id="%E8%AF%8D%E5%BD%A2%E5%8F%98%E5%8C%96">词形变化</h2>
+<p>某个动词的各种时态是什么？某个形容词的比较级和最高级又是什么？某个名词的复数呢？这个单词是由哪个单词怎么演变而来的？它的原型单词（Lemma）是什么？</p>
+<p>可能大家注意到上表有一个 <code>Exchange</code> 字段，它就是来做这个事情的，这是本词典一大特色之一，格式如下：</p>
+<pre><code class="language-text"><div>类型1:变换单词1/类型2:变换单词2
+</div></code></pre>
+<p>比如 perceive 这个单词的 exchange 为：</p>
+<pre><code class="language-text"><div>d:perceived/p:perceived/3:perceives/i:perceiving
+</div></code></pre>
+<p>意思是 perceive 的过去式（<code>p</code>） 为 perceived，过去分词（<code>d</code>）为 perceived, 现在分词（'i'）是 perceiving，第三人称单数（<code>3</code>）为 perceives。冒号前面具体项目为：</p>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>p</td>
+<td>过去式（did）</td>
+</tr>
+<tr>
+<td>d</td>
+<td>过去分词（done）</td>
+</tr>
+<tr>
+<td>i</td>
+<td>现在分词（doing）</td>
+</tr>
+<tr>
+<td>3</td>
+<td>第三人称单数（does）</td>
+</tr>
+<tr>
+<td>r</td>
+<td>形容词比较级（-er）</td>
+</tr>
+<tr>
+<td>t</td>
+<td>形容词最高级（-est）</td>
+</tr>
+<tr>
+<td>s</td>
+<td>名词复数形式</td>
+</tr>
+<tr>
+<td>0</td>
+<td>Lemma，如 perceived 的 Lemma 是 perceive</td>
+</tr>
+<tr>
+<td>1</td>
+<td>Lemma 的变换形式，比如 s 代表 apples 是其 lemma 的复数形式</td>
+</tr>
+</tbody>
+</table>
+<p>这个是根据 BNC 语料库和 NodeBox / WordNet 的语言处理工具生成的，有了这个 Exchange ，你的 App 能为用户提供更多信息。</p>
+<h2 id="%E7%BC%96%E7%A8%8B%E6%8E%A5%E5%8F%A3">编程接口</h2>
+<p>代码 <a href="http://stardict.py">stardict.py</a> 用于操作该数据（兼容 Python 2/3），同时实现三个类：</p>
+<table>
+<thead>
+<tr>
+<th>类名</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DictCsv</td>
+<td>用于读写 ecdict.csv 数据格式文件</td>
+</tr>
+<tr>
+<td>StarDict</td>
+<td>用来读写 SQLite 词典数据文件，数据字段和上面相同，接口也和 CSV 版本相同</td>
+</tr>
+<tr>
+<td>DictMySQL</td>
+<td>MySQL 版本的数据文件读写，同样字段和接口和上面两者相同</td>
+</tr>
+</tbody>
+</table>
+<p>以上三个类都统一提供如下接口：</p>
+<table>
+<thead>
+<tr>
+<th>接口</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>query</td>
+<td>查询单词，可以查整数 id（CSV 里 id 为行号，其他两者是自增量）或单词字符串，返回 Python 字典</td>
+</tr>
+<tr>
+<td>match</td>
+<td>单词匹配，匹配最相似的前 N 个单词</td>
+</tr>
+<tr>
+<td>query_batch</td>
+<td>批量查询</td>
+</tr>
+<tr>
+<td>count</td>
+<td>返回数据库词条总数</td>
+</tr>
+<tr>
+<td>register</td>
+<td>注册新单词</td>
+</tr>
+<tr>
+<td>update</td>
+<td>更新单词数据，除了 id, word 两个字段外其他都可以更新</td>
+</tr>
+<tr>
+<td>remove</td>
+<td>删除单词</td>
+</tr>
+<tr>
+<td>commit</td>
+<td>提交更改</td>
+</tr>
+</tbody>
+</table>
+<p>在 stardict.tools 下面还有很多帮助类的接口，便于你维护词典数据：</p>
+<ol>
+<li>导出两个字典数据的差异</li>
+<li>导入差异数据到一个字典</li>
+<li>导出成 StarDict（星际译王）的原格式（用于 DictEditor 生成字典）</li>
+<li>导出成 mdict 的 .mdx 的源文件（用于 MdxBuilder 生成 mdx 字典）</li>
+<li>词典格式 .csv, .db (Sqlite), mysql 之间数据互转。</li>
+</ol>
+<h2 id="%E8%AF%8D%E5%B9%B2%E6%9F%A5%E8%AF%A2">词干查询</h2>
+<p>这个词干不是背单词时候的词根，而是 lemma。每个单词有很多变体，你编写一个抓词软件抓到一个过去式的动词 gave，如果字典里面没有的话，就需要词干数据库来查询，把 gave 转变为 give，再查词典数据库。</p>
+<p>我扫描了 BNC 语料库全部 1 亿个词条语料生成的 lemma.en.txt 就是用来做这个事情，<a href="http://stardict.py">stardict.py</a> 中 LemmaDB 这个类就是用来加载该数据并进行分析的。</p>
+<p>你或许希望统计某些文档的词频，然后针对性的学习，那么你需要先将文章中出现的词先转换成该词的原型（lemma），网上有很多算法做这个事情，但是都不靠谱，最靠谱的方式就是数据库直接查询，著名的拼写检查库 hunspell 库就是这么干的。</p>
+<p>用 LemmaDB 类可以方便的查询 ['gave', 'taken', 'looked', 'teeth'] 的 lemma 是 ['give', 'take', 'look', 'tooth']，也可以查找 'take' 这个词的若干种变体。</p>
+<p>这个 lemma.en.txt 涵盖了 BNC 所有语料的各种词汇变形，95%的情况下你可以查到你想要的，这个作为首选方法，查不到再去依靠各种算法（判断词尾 -ed，-ing 等），最可靠的是数据库，算法次之。</p>
+<h2 id="%E5%8D%95%E8%AF%8D%E8%AF%8D%E6%80%A7">单词词性</h2>
+<p>数据库中有一个字段 pos，就是中文里面的词性，动词还是名词，英文叫做 <a href="https://www.nltk.org/book/ch05.html">pos</a> ，句子中的位置。同样是扫描语料库生成的，比如：</p>
+<p>fuse：pos = <code>n:46/v:54</code></p>
+<p>代表 fuse 这个词有两个位置（词性），n（名词）占比 46%，v（动词）占比 54%，根据后面的比例，你可以直到该词语在语料库里各个 pos 所出现的频率。关于 pos 里各个字母的含义还可以看 <a href="http://www.natcorp.ox.ac.uk/tools/xaira_search.xml?ID=POS">这里</a> 和 <a href="http://www.natcorp.ox.ac.uk/docs/c5spec.html">这里</a>。</p>
+<h2 id="%E8%AF%8D%E5%85%B8%E4%BD%BF%E7%94%A8">词典使用</h2>
+<p>同时支持 CSV, SQLite, MySQL 三种格式，github 上放的字典数据是 .csv，因为基于文本，便于 PR 和更改看 differ，但是本地使用 csv 很痛苦，文件大了打开速度很慢。所以自己使用时，一般都是转换成本地的 SQLite 数据库，这样快速很多，基本没有等待，查单词也很迅速。</p>
+<p>日常使用，比如整理自己的卡片，生成 anki 数据等，SQLite 是首选，<a href="http://stardict.py">stardict.py</a> 中提供完整的 SQLite 字典接口。如果自己要修订，建议先新生成一个比较小的 .csv，配合本地的大的 SQLite .db 数据库一起用，查一个单词时先查小的 .csv 里面有没有，没有的话再去查 SQLite 的库去，这样现在 .csv 里面把修订的工作干了，自己用一段时间没大问题，数据比较稳定的时候，一次性从 .csv 中合并到大的 SQLite 数据库中。
+不合并也行，同时使用两个库。</p>
+<p>如果你要提交 PR，可以把你的整个 SQLite 数据库导回 .csv 格式，然后在网上提交 differ 或者 patch。本地可能有多个 SQLite 数据库，一个就是这个 ECDICT 的数据，一些可能是你从其他什么某些资料里面导出来的比较好的释义例句等，就是你日积月累整理收集的各种材料。</p>
+<p>生成 Anki 卡片的时候，你可以优先使用你自己的库的信息，你自己的库里没有了，再找 ECDICT。而 ECDICT 里面的各种词频标注，考试大纲标注，也可以给你提供不同层次的参考。比如你想把托福里面去除六级的词汇筛选出来（很多重合），这时 EDICT 本身的标注信息就能让你方便的完成这个工作了，你也可以把词频三万以下的单词导出来成为 Excel，进行更多处理。</p>
+<p><strong>最新版数据太大，我已经把数据库压缩成 stardict.7z 了，外面默认的 ecdict.csv 算是一个基础版本（76 万词条）。</strong></p>
+<h2 id="%E6%A8%A1%E7%B3%8A%E5%8C%B9%E9%85%8D">模糊匹配</h2>
+<p>数据库中有一个隐藏字段，叫做 <code>sw</code>，这是 strip-word 的缩写，意思是单词字符串经过 strip 以后的结果。这里的 strip 不是 python string.strip 那样简单的把头部尾部的空格去除，而是去除整个字符串中非字母和数字的部分，并将字母转为小写，对应代码为：</p>
+<pre><code class="language-python"><div><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">stripword</span><span class="hljs-params">(word)</span>:</span>
+    <span class="hljs-keyword">return</span> (<span class="hljs-string">''</span>.join([ n <span class="hljs-keyword">for</span> n <span class="hljs-keyword">in</span> word <span class="hljs-keyword">if</span> n.isalnum() ])).lower()
+</div></code></pre>
+<p>CSV 数据库虽然没有记录该字段，但每次加载到内存以后会自动为每个单词生成该字段，而 SQLite/MySQL 数据库则是建表的时候就包含该字段，插入单词时为该单词自动计算后插入，以后不再改变。</p>
+<p>这是参考 Mdx 词典格式引入的模糊匹配键值，当你使用 <a href="http://stardict.py">stardict.py</a> 中的 match 方法时，如果第三个参数为 True，将会使用 <code>sw</code> 字段进行匹配。默认 False 使用 <code>word</code> 字段匹配时，是严格匹配字符串，那么你搜索 &quot;long-time&quot; 这个单词，只能匹配到 &quot;long-time&quot; 开头的所有单词，比如：</p>
+<pre><code>long-time, long-time base, long-time period, long-time cycle, ...
+</code></pre>
+<p>但是如果进行模糊匹配，按照 <code>sw</code> 字段匹配 &quot;long-time&quot; 这个单词，将会搜索出所有 <code>sw</code> 以 &quot;longtime&quot; 开头的单词，比如：</p>
+<pre><code>long-time, longtime, long time, long-time base, longtime base, ...
+</code></pre>
+<p>单词随着时间的推移，最开始是一个词组，然后变为一个减号链接的组合词，最后用的多了，减号也省了。很多词典里不一定能完全包括 long-time/long time/longtime 这类词的所有形态，但首次查询搜索失败时，可以 match 一下相同 sw 的单词，然后能够定位到该单词的其他形态。</p>
+<p>很多词典，如星际译王都不包含 strip 字段，因此常常词典中有该单词，但是由于你输入了错误的形态，导致你查不出来，而 ECDICT 作为一个负责任的词典数据库，能够让你通过 <code>sw</code> 这个字段任意查询单词的各种形态。</p>
+<h2 id="%E6%96%87%E5%AD%97%E5%A4%84%E7%90%86">文字处理</h2>
+<p><a href="http://linguist.py">linguist.py</a> 里面有一些简单的 WordNet, NodeBox 封装。</p>
+<h2 id="%E7%AE%80%E6%98%8E%E8%8B%B1%E6%B1%89%E5%A2%9E%E5%BC%BA%E7%89%88">简明英汉增强版</h2>
+<p>使用 ECDICT 的数据，生成了《<a href="https://github.com/skywind3000/ECDICT/wiki/%E7%AE%80%E6%98%8E%E8%8B%B1%E6%B1%89%E5%AD%97%E5%85%B8%E5%A2%9E%E5%BC%BA%E7%89%88">简明英汉字典增强版</a>》的字典词库，可以在 GoldenDict, 欧陆, MDict, StarDict, BlueDict, EDWin 里面加载，还有 Kindle 格式，可以在 Kindle 里面挂载。这是全网收词量最多的本地化词典，再也不用联网查单词忍受网速慢，广告多和效率低的问题了。</p>
+<p><a href="https://github.com/skywind3000/ECDICT/wiki/%E7%AE%80%E6%98%8E%E8%8B%B1%E6%B1%89%E5%AD%97%E5%85%B8%E5%A2%9E%E5%BC%BA%E7%89%88">简明英汉增强版-说明和下载</a></p>
+<h2 id="%E6%96%87%E6%A1%A3%E7%B4%A2%E5%BC%95">文档索引</h2>
+<ul>
+<li><a href="https://github.com/skywind3000/ECDICT/wiki">项目维基</a></li>
+<li><a href="https://github.com/skywind3000/ECDICT/wiki/%E7%AE%80%E6%98%8E%E8%8B%B1%E6%B1%89%E5%AD%97%E5%85%B8%E5%A2%9E%E5%BC%BA%E7%89%88">简明英汉增强版</a></li>
+<li><a href="https://github.com/skywind3000/ECDICT/wiki/%E7%AE%80%E6%98%8E%E8%8B%B1%E6%B1%89%E5%A2%9E%E5%BC%BA%E7%89%88%EF%BC%88%E6%AC%A7%E9%99%86%EF%BC%89">简明英汉增强版-欧陆专版</a></li>
+<li><a href="https://github.com/skywind3000/ECDICT/wiki/%E9%80%89%E8%AF%8D">选词来源</a></li>
+<li><a href="https://github.com/skywind3000/ECDICT/wiki/%E5%8F%8C%E8%A7%A3%E9%87%8A%E4%B9%89">双解释义</a></li>
+</ul>
+<h2 id="%E6%AC%A2%E8%BF%8E%E8%B4%A1%E7%8C%AE">欢迎贡献</h2>
+<p>采用 CSV 格式正是为了方便 GitHub 上提交 PR，管理 differ，欢迎大家提交各类词条增补。</p>
+<h2 id="TODO">TODO</h2>
+<ul>
+<li><s>搜索并校对：所有动词（3 月 21 日根据 NodeBox 工具包校对完成）</s></li>
+<li><s>搜索并校对：所有副词（3 月 22 日完成校对）</s></li>
+<li><s>搜索并校对：所有形容词（3 月 22 日完成校对）</s></li>
+<li><s>搜索并校对：所有动物名词（<a href="http://lib.colostate.edu/wildlife/atoz.php?letter=all%EF%BC%89">http://lib.colostate.edu/wildlife/atoz.php?letter=all）</a></s></li>
+<li><s>搜索并校对：所有植物名词（<a href="http://davesgarden.com/guides/botanary/vbl/a/%EF%BC%89">http://davesgarden.com/guides/botanary/vbl/a/）</a></s></li>
+<li><s>搜索并校对：所有地理名词（<a href="http://www.itseducation.asia/geography/a.htm%EF%BC%89">http://www.itseducation.asia/geography/a.htm）</a></s></li>
+<li><s>搜索并校对：所有地名（<a href="https://en.wikipedia.org/wiki/Lists_of_cities_by_country%EF%BC%89">https://en.wikipedia.org/wiki/Lists_of_cities_by_country）</a></s></li>
+<li><s>补充完成非核心词汇的英文释义</s></li>
+<li><s>补充各个单词的位置信息</s></li>
+<li><s>补充动词的时态语态变种信息</s></li>
+<li>继续修订核心两万词汇的释义准确性</li>
+</ul>
+<h2 id="HISTORY">HISTORY</h2>
+<ul>
+<li>2017-4-20 在网友大力支持下，版本 1.0.14 发布，收词 222 万，同时生成 mdx 词典，见 release 页面</li>
+<li>2017-4-7 收录开源词典 《<a href="https://github.com/fxsjy/diaosi">屌丝字典</a>》的英汉部分。</li>
+<li>2017-3-31 修正当代语料库词频数据和部分 BNC 数据。</li>
+<li>2017-3-29 整理完所有动词的衍生形式</li>
+<li>2017-3-28 整理文档，补全网友提供的部分释义包括一些地名和人名</li>
+<li>2017-3-27 再次根据 BNC，并且自动生成字典中缺少的动词，名词和形容词的各种时态语态。</li>
+<li>2017-3-26 全面统计 BNC 原始语料库中一亿个单词，生成单词变化数据库 lemma.en.txt。</li>
+<li>2017-3-23 继续使用 WordNet 补全约 1 万个新增单词的英文定义。</li>
+<li>2017-3-22 使用 NodeBox 校对完成所有副词和形容词。</li>
+<li>2017-3-21 使用 NodeBox 校对完所有动词，并且添加动词各种时态。</li>
+</ul>
+
+    </body>
+    </html>
